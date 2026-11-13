@@ -4,7 +4,7 @@
 
 반별 약 **30분** 걸리던 숙제공지 작성을 **3분 이내**로 줄였습니다. 교재별 계획표와 음원 링크를 매번 찾아 조합하던 작업을 자동화했고, 동료 강사들도 실제 업무에서 사용하고 있습니다.
 
-**[프로그램 직접 체험하기](https://jdabeen.github.io/homework-automation-demo/)** · [개발 과정 상세 보기](./TECHNICAL_NOTES.md)
+**[프로그램 직접 체험하기](https://jdabeen.github.io/homework-automation-demo/)**
 
 ## 해결한 문제
 
