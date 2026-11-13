@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>숙제공지 생성기 | 공개 체험판</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;color:#232323;background:#fff}
+main{width:min(1020px,calc(100% - 44px));margin:60px auto 72px}header{border-bottom:1px solid #ddd;padding-bottom:26px;margin-bottom:30px}
+.eyebrow{font-size:11px;font-weight:750;letter-spacing:.13em;color:#686868;margin-bottom:12px}
+h1{font-size:32px;letter-spacing:-.045em;margin:0 0 14px;line-height:1.3}p{line-height:1.8;font-size:14px;color:#626262;margin:0}
+.note{margin-top:20px;padding:12px 0;font-size:12px;border-top:1px solid #e6e6e6;color:#565656}
+.note a{color:#222;text-underline-offset:3px}.cols{display:grid;grid-template-columns:1fr 1.07fr;gap:38px}
+h2{font-size:15px;padding-bottom:12px;border-bottom:1px solid #e3e3e3;margin:0 0 22px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{font-size:12px;font-weight:700;color:#4d4d4d;display:block;margin-bottom:7px}
+select,input,textarea{font:inherit;color:#252525;border:1px solid #cacaca;background:#fff;border-radius:3px;width:100%}
+select,input{height:40px;padding:0 11px;font-size:13px}select:focus,input:focus,textarea:focus{outline:2px solid #a9bccb;outline-offset:1px}
+button{font-size:13px;font-weight:700;padding:11px 15px;border:1px solid #333;border-radius:3px;cursor:pointer;background:#242424;color:#fff}
+button.secondary{color:#222;background:#fff}button:hover{opacity:.85}
+.actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:20px}.status{font-size:12px;color:#5c5c5c}
+textarea{height:390px;padding:16px;font-family:"Malgun Gothic",monospace;font-size:12px;line-height:1.7;resize:vertical;background:#fafafa}
+.help{font-size:12px;color:#6c6c6c;line-height:1.7;margin:18px 0}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid #ddd;font-size:11px;color:#747474}
+@media(max-width:750px){main{margin:34px auto}.cols{grid-template-columns:1fr;gap:30px}.fields{gap:12px}textarea{height:340px}h1{font-size:26px}}
+</style></head><body>
+<main><header><div class="eyebrow">WORK SAMPLE / PROCESS AUTOMATION</div>
+<h1>숙제공지 생성기</h1>
+<p>반·교재·단원·수업 일차를 선택하면 숙제 범위와 음원 정보를 조합해 공지 문구를 생성합니다.<br>
+실제 학원에서 사용하는 업무 도구의 핵심 입력·출력 과정을 재현한 체험판입니다.</p>
+<div class="note">공개용 가상 데이터만 사용합니다. 실제 학원 교재·학생·음원 링크는 포함하지 않습니다. &nbsp; <a href="https://github.com/JDabeen/JDabeen.github.io/tree/master/homework-automation-demo">개발 기록 보기</a></div>
+</header>
+<div class="cols"><section><h2>01. 수업 정보 입력</h2><div class="fields">
+<div><label for="cls">반</label><select id="cls"><option>샘플 A반</option><option>샘플 B반</option></select></div>
+<div><label for="date">공지 날짜</label><input type="date" id="date" value="2026-11-13"></div>
+<div><label for="book">교재</label><select id="book"><option value="b">기초 교재 A</option><option value="c">회화 교재 B</option></select></div>
+<div><label for="unit">단원</label><select id="unit"><option value="1">Unit 1</option><option value="2">Unit 2</option></select></div>
+<div><label for="day">수업 일차</label><select id="day"><option value="1">1일차</option><option value="2">2일차</option><option value="3">3일차</option><option value="4">4일차</option><option value="5">5일차</option></select></div>
+<div><label for="pages">추가 숙제</label><input id="pages" maxlength="100" placeholder="예: 워크북 p. 10–11"></div>
+</div><div class="help">실제 운영 버전은 다양한 과정과 예외 규칙을 처리합니다. 이 체험판은 두 교재의 샘플 규칙만 담았습니다.</div>
+<div class="actions"><button id="make">숙제공지 생성</button><button id="reset" class="secondary">초기화</button><span class="status" id="status"></span></div>
+</section><section><h2>02. 자동 생성 결과</h2>
+<textarea id="out" readonly aria-label="자동 생성 결과" placeholder="왼쪽 정보를 선택하고 '숙제공지 생성'을 누르세요."></textarea>
+<div class="actions"><button id="copy" class="secondary">내용 복사</button><button id="track" class="secondary">샘플 음원 링크 확인</button></div>
+<p class="help">샘플 음원은 실제 파일이 아닌 링크 작동을 설명하는 페이지입니다.</p>
+</section></div><footer>HTML · CSS · JavaScript &nbsp; / &nbsp; 규칙 기반 실행 &nbsp; / &nbsp; GPT·Claude 코딩 보조 &nbsp; / &nbsp; AI API 호출 없음</footer></main>
+<script>
+"use strict";
+const el=id=>document.getElementById(id);
+const books={
+b:{name:"기초 교재 A",kind:"발음·어휘",base:7,hw:["단어 소리 내어 읽기 3회","핵심 문장 따라 읽기 3회","워크북 문제 풀기","오늘의 문장 녹음","학습 내용 복습"],tracks:["본문","단어"]},
+c:{name:"회화 교재 B",kind:"문장·회화",base:21,hw:["기본 문장 연습 5회","대화문 연습 3회","질문에 한 문장으로 답하기","대화문 녹음","학습 내용 복습"],tracks:["대화문","Q&A"]}};
+let trackId="sample";
+function make(){
+const date=el("date").value;if(!date){el("status").textContent="날짜를 선택해 주세요.";return}
+const key=el("book").value, b=books[key], unit=Number(el("unit").value),day=Number(el("day").value), n=(unit-1)*5+day;
+const page=b.base+(n-1)*2,code=String(n).padStart(2,"0"),next=String(n+1).padStart(2,"0"); trackId=key+"-"+code;
+const tasks=["- "+b.hw[day-1],"- "+b.name+" p. "+page+"–"+(page+1)];
+const extra=el("pages").value.trim();if(extra)tasks.push("- 추가 숙제: "+extra);
+const link=new URL("demo-track.html?track="+encodeURIComponent(trackId),document.baseURI).href;
+el("out").value=["[숙제공지 | "+el("cls").value+"]",date,"","오늘의 수업","- "+b.name+" / Unit "+unit+" / "+day+"일차","- 학습 구분: "+b.kind,"","숙제",...tasks,"","학습 음원","- "+b.tracks[0]+": 샘플 트랙 #"+code,"- "+b.tracks[1]+": 샘플 트랙 #"+next,link,"","※ 가상 규칙 및 자료를 사용한 공개 데모입니다."].join("\n");
+el("status").textContent="생성 완료";
+}
+el("make").addEventListener("click",make);
+el("reset").addEventListener("click",()=>{el("cls").selectedIndex=0;el("date").value="2026-11-13";el("book").value="b";el("unit").value="1";el("day").value="1";el("pages").value="";el("out").value="";el("status").textContent="초기화 완료";});
+el("copy").addEventListener("click",async()=>{if(!el("out").value){el("status").textContent="먼저 공지를 생성하세요.";return}try{await navigator.clipboard.writeText(el("out").value);el("status").textContent="복사 완료"}catch(e){el("out").focus();el("out").select();el("status").textContent="텍스트를 선택했습니다. Ctrl+C로 복사하세요."}});
+el("track").addEventListener("click",()=>{if(!el("out").value)make();window.open(new URL("demo-track.html?track="+encodeURIComponent(trackId),document.baseURI).href,"_blank","noopener")});
+</script></body></html>
